@@ -1,0 +1,76 @@
+           -------------------------------------------------------
+ 
+               PSEDIT, an editor for Phantasy Star backup images
+  
+                  FREEWARE, by Mike Pontillo and Kevin Nishi
+  
+               copyright(c)1997 by Mike Pontillo and Kevin Nishi
+
+                              version 0.99a readme
+
+           -------------------------------------------------------
+
+PSEDIT is guaranteed to do NOTHING.  Due to the nature of PS savegames, there
+is often very little we CAN do.  So I STRONGLY advise you to back up your
+savegames before using this editor.
+
+WE ARE NOT RESPONSIBLE FOR LOST, OR IN ANY WAY CORRUPTED FILES!  I have tried
+to make this product as bug free as possible but there could be some unforseen
+errors.
+
+If you find any bugs in PSEDIT, or have any suggestions of any kind, please
+drop me an e-mail at <mike_pontillo@royal.net>.  I would be happy to hear
+your feedback.
+
+
+                             .ת-------------ת.
+                             EDITING INFO/TIPS
+                             ~-תתתתתתתתתתתתת-~
+
+ * Phantasy Star re-calculates attack and defense strength, along with
+   maximum HP and MP points whenever you go into battle.  These values
+   have been found, as far as I can tell, to be calculated from some kind of
+   a lookup table, (an array, actually) based on the player's level.  So,
+   if you set the level to 30 (the maximum) and fight something, a lot of
+   the stats will take care of themselves.  Keep this in mind when you're
+   editing your savegames -- PS will only let your character become so
+   powerful.  If you set your level higher than 30 (for all you programming
+   types out there) it appears that it causes PS to look up a level that
+   doesn't exist, which could either be another character's stats, or junk.
+   (in other words, BE CAREFUL!)
+
+ * A neat thing you can do is equip other characters weapons, or weapons that
+   aren't actually weapons.  (For example, I equipped some armor as my weapon
+   once, and my attack was the "fire" spell.)  But be warned -- this has been
+   known to crash the SMS emmulator when that character tries to attack.
+
+ * Don't give a character more spells than they actually have.  This will
+   cause PS to crash if you try to cast that spell.  See the chart below:
+
+               +-------------------+------+------+------+------+
+               |                   | Alis | Myau | Odin | Noah |
+               +-------------------+------+------+------+------+
+               |     combat spells |   5  |   4  |   0  |   5  |
+               +-------------------+------+------+------+------+
+               | non-combat spells |   2  |   3  |   0  |   5  |
+               +-------------------+------+------+------+------+
+
+   However, what you set that to probably won't matter too much anyway, since
+   the spells are looked back up based on the level when a battle occurs. 
+ 
+ * Don't give yourself more than 24 or so items, as Phantasy Star will start
+   doing VERY STRANGE things.  If you want to do some testing and research
+   on how PS reacts, fine.  Do so, and get back to me about it.  I've been
+   trying to figure out how the "numitems" variable relates to the item list,
+   but it appears to be a bit inconsistant.  (numitems is the number of items
+   currently in your inventory, as reported by PSEDIT on the status line in
+   the item editor)
+
+If you find a bug in this editor (and you probably will, if you use it enough)
+please drop me an email at <mike_pontillo@royal.net> and I will take care of
+it/get back to you as soon as time permits.  However, PSEDIT has become
+more trouble than it's worth at 1000+ lines of code, plus library files that
+I have written.
+
+PSEDIT was written in a mixture Turbo Pascal 7 and assembly language.
+
