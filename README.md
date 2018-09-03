@@ -2,10 +2,21 @@
 
 ## Introduction
 
-`psedit` was the first piece of software I released, back in the late 1990s.
+`psedit` allows the editing of Phantasy Star saved games. The save files must
+be dumps from a Sega Master System emulator, or a file-based dump of
+battery-backed-up SRAM data from the original cartridge, such as the contents
+of a `.ssm` file from an Everdrive.
+
+`psedit` is the first piece of software I released, back in the late 1990s,
+before the Internet became popular. It was distributed on FidoNet via dial-up
+bulletin board systems.
 
 After I found the long-lost source code on an old backup disk, I decided to
 upload it to GitHub and make it open source.
+
+My interest in this old project of mine was reinvigorated both because my
+ten-year-old son started getting interested in the original Phantasy Star
+game, and because I wanted to improve my Go language skills.
 
 ## Organization
 
