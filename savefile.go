@@ -41,6 +41,7 @@ var DeletedFlagOffsets = [...]uint16{
 	0x105,
 }
 
+// PlayerRecord is a 16-byte (0x10) structure representing each character.
 type PlayerRecord struct {
 	Alive              bool
 	CurrentHP          uint8
@@ -61,9 +62,38 @@ type PlayerRecord struct {
 
 type Inventory [32]Item
 
+type SavedGame struct {
+	// 0x40 bytes of character date
+	Characters [4]PlayerRecord
+	// Pad out to offset 0xC0
+	Padding [0x80]uint8
+	Inventory Inventory
+	Meseta uint16
+	NumInventoryItems uint8
+	Padding2 [0x31d]uint8
+}
+
+type SaveFile struct {
+	Magic	[0x100]uint8
+	Header  [0x200]uint8
+	Padding [0x200]uint8
+	Games	[5]SavedGame
+}
+
 // Pack returns a bytes.Buffer object suitable for writing to a save file.
 // (Using the Go structure directly results in too much padding.)
 func (record *PlayerRecord) Pack() bytes.Buffer {
+	var buffer = bytes.Buffer{}
+	err := struc.Pack(&buffer, record)
+	if err != nil {
+		panic(err)
+	}
+	return buffer
+}
+
+// Pack returns a bytes.Buffer object suitable for writing to a save file.
+// (Using the Go structure directly results in too much padding.)
+func (record *SaveFile) Pack() bytes.Buffer {
 	var buffer = bytes.Buffer{}
 	err := struc.Pack(&buffer, record)
 	if err != nil {
@@ -139,4 +169,9 @@ var Items = map[Item]string{
 	62: "Miricle Key",
 	63: "Zillion",
 	64: "Secrets",
+}
+
+// String returns a string representation for the specified Item.
+func (item Item) String() string {
+	return Items[item]
 }
