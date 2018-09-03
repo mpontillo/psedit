@@ -1,11 +1,76 @@
 package psedit
 
+import (
+	"bytes"
+	"github.com/lunixbochs/struc"
+)
+
 type Item uint8
 
 const (
 	Nothing Item = 0
 	MaxItem Item = 64
 )
+
+// A Phantasy Star 1 save file consists of five saved games.
+// A header of size 0x200 exists at position 0x100 in the save file.
+// Assuming saved game indexes ("GameIndex") numbered 0 through 4, each saved
+// game can be found in the file at location `0x500 + 0x400 * gamenum`.
+// In other words, saved games start at index 0x500 and are each of size 0x400.
+// Each saved game consists of four packed 16-byte PlayerRecord structures,
+// representing Alis, Myau, Odin, and Noah. At offset 0xC0 in each saved game,
+// there is a 32-byte array of inventory items. At offset 0xE0 in the saved
+// game, a two-byte value can be found representing the number of meseta
+// followed by a one-byte value representing the number of inventory items.
+
+type Header [0x200]uint8
+
+var NameOffsets = [...]uint16{
+	0x2a,
+	0x4e,
+	0x72,
+	0x96,
+	0xba,
+}
+
+var DeletedFlagOffsets = [...]uint16{
+	0x101,
+	0x102,
+	0x103,
+	0x104,
+	0x105,
+}
+
+type PlayerRecord struct {
+	Alive              bool
+	CurrentHP          uint8
+	CurrentMP          uint8
+	Experience         uint16
+	Level              uint8
+	MaxHP              uint8
+	MaxMP              uint8
+	Attack             uint8
+	Defense            uint8
+	Weapon             Item
+	Armor              Item
+	Shield             Item
+	State              uint8
+	NumCombatSpells    uint8
+	NumNonCombatSpells uint8
+}
+
+type Inventory [32]Item
+
+// Pack returns a bytes.Buffer object suitable for writing to a save file.
+// (Using the Go structure directly results in too much padding.)
+func (record *PlayerRecord) Pack() bytes.Buffer {
+	var buffer = bytes.Buffer{}
+	err := struc.Pack(&buffer, record)
+	if err != nil {
+		panic(err)
+	}
+	return buffer
+}
 
 var Items = map[Item]string{
 	Nothing: "[nothing]",
