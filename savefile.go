@@ -66,18 +66,22 @@ type SavedGame struct {
 	// 0x40 bytes of character date
 	Characters [4]PlayerRecord
 	// Pad out to offset 0xC0
-	Padding [0x80]uint8
-	Inventory Inventory
-	Meseta uint16
+	Padding           [0x80]uint8
+	Inventory         Inventory
+	Meseta            uint16
 	NumInventoryItems uint8
-	Padding2 [0x31d]uint8
+	Padding2          [0x31d]uint8
 }
 
 type SaveFile struct {
-	Magic	[0x100]uint8
-	Header  [0x200]uint8
+	Magic  [0x100]uint8
+	Header [0x200]uint8
+	// Pad out to 0x500
 	Padding [0x200]uint8
-	Games	[5]SavedGame
+	// Saved games (starting at offset 0x500)
+	Games [5]SavedGame
+	// Pad out to 16 kilobytes
+	Padding2 [0x2700]uint8
 }
 
 // Pack returns a bytes.Buffer object suitable for writing to a save file.
