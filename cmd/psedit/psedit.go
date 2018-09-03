@@ -17,5 +17,5 @@ func main() {
 	fmt.Println(len(psedit.Inventory{}))
 	fmt.Println(unsafe.Sizeof(saveFile))
 	buffer = saveFile.Pack()
-	fmt.Println(buffer.Len())
+	fmt.Printf("0x%x\n", buffer.Len())
 }
