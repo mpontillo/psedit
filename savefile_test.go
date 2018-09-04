@@ -43,7 +43,7 @@ func TestReadSaveFile(t *testing.T) {
 	}
 }
 
-func TestPackedFileIsIdenticalToOriginal(t *testing.T) {
+func TestPackedFileIsIdenticalUnlessChanged(t *testing.T) {
 	originalBytes, err := ioutil.ReadFile(TestFilename)
 	if err != nil {
 		panic(err)
@@ -61,6 +61,13 @@ func TestPackedFileIsIdenticalToOriginal(t *testing.T) {
 	var newlyPackedBytes = buffer.Bytes()
 	if !reflect.DeepEqual(originalBytes, newlyPackedBytes) {
 		t.Error("Rewritten save file differs from original.")
+	}
+	// Change a value in the file; this time we expect it to differ.
+	saveFile.Games[0].Meseta++
+	buffer = saveFile.Pack()
+	newlyPackedBytes = buffer.Bytes()
+	if reflect.DeepEqual(originalBytes, newlyPackedBytes) {
+		t.Error("Modified save file should have changed.")
 	}
 }
 
