@@ -128,6 +128,9 @@ func (record *SavedGame) Pack() bytes.Buffer {
 	return buffer
 }
 
+var ExpectedMagic = []uint8("PHANTASY STAR         BACKUP RAM" +
+	"PROGRAMMED BY          NAKA YUJI")
+
 type SaveFile struct {
 	Magic  [0x100]uint8
 	Header [0x200]uint8
@@ -148,6 +151,13 @@ func (record *SaveFile) Pack() bytes.Buffer {
 		panic(err)
 	}
 	return buffer
+}
+
+func (record *SaveFile) HasValidMagic() bool {
+	if bytes.HasPrefix(record.Magic[:], ExpectedMagic) {
+		return true
+	}
+	return false
 }
 
 func ReadSaveFile(r io.Reader) (*SaveFile, error) {

@@ -1,7 +1,6 @@
 package psedit
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -17,21 +16,7 @@ func TestSaveFilePacksCorrectly(t *testing.T) {
 	}
 }
 
-func TestExperiments(t *testing.T) {
-	var item Item = 23
-	fmt.Println(item.String())
-	var playerRecord = PlayerRecord{}
-	var saveFile = SaveFile{}
-	fmt.Println(unsafe.Sizeof(playerRecord))
-	var buffer = playerRecord.Pack()
-	fmt.Println(buffer.Len())
-	fmt.Println(unsafe.Sizeof(saveFile))
-	buffer = saveFile.Pack()
-	fmt.Printf("0x%x\n", buffer.Len())
-}
-
-func TestReadFile(t *testing.T) {
-	saveFile := &SaveFile{}
+func TestSaveFileHasGoodLength(t *testing.T) {
 	data, err := ioutil.ReadFile("data/phanstar.sav")
 	if err != nil {
 		panic(err)
@@ -39,10 +24,41 @@ func TestReadFile(t *testing.T) {
 	if len(data) != 0x4000 {
 		t.Errorf("Expected 0x4000 bytes; save file was 0x%04x bytes", len(data))
 	}
+}
+
+func TestReadSaveFile(t *testing.T) {
+	saveFile := &SaveFile{}
 	f, err := os.Open("data/phanstar.sav")
 	if err != nil {
 		panic(err)
 	}
 	saveFile, err = ReadSaveFile(f)
-	t.Log(saveFile)
+	if !saveFile.HasValidMagic() {
+		t.Error("Invalid save file.")
+	}
+}
+
+func TestCheckMagicFailsForBadMagic(t *testing.T) {
+	saveFile := &SaveFile{}
+	f, err := os.Open("data/invalid_magic.sav")
+	if err != nil {
+		panic(err)
+	}
+	saveFile, err = ReadSaveFile(f)
+	if saveFile.HasValidMagic() {
+		t.Error("Valid magic in save file. (Expected bad magic.)")
+	}
+}
+
+func TestExperiments(t *testing.T) {
+	var item Item = 23
+	t.Log(item.String())
+	var playerRecord = PlayerRecord{}
+	var saveFile = SaveFile{}
+	t.Log(unsafe.Sizeof(playerRecord))
+	var buffer = playerRecord.Pack()
+	t.Log(buffer.Len())
+	t.Log(unsafe.Sizeof(saveFile))
+	buffer = saveFile.Pack()
+	t.Logf("0x%x\n", buffer.Len())
 }
