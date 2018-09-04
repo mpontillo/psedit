@@ -128,8 +128,11 @@ func (record *SavedGame) Pack() bytes.Buffer {
 	return buffer
 }
 
-var ExpectedMagic = []uint8("PHANTASY STAR         BACKUP RAM" +
-	"PROGRAMMED BY          NAKA YUJI")
+var ExpectedMagic = []uint8("" +
+	"PHANTASY STAR   " +
+	"      BACKUP RAM" +
+	"PROGRAMMED BY   " +
+	"       NAKA YUJI")
 
 type SaveFile struct {
 	Magic  [0x100]uint8
