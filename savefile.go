@@ -73,12 +73,14 @@ func (record *PlayerRecord) Pack() bytes.Buffer {
 	return buffer
 }
 
+type Inventory [32]Item
+
 type SavedGame struct {
 	// 0x40 bytes of character date
 	Characters [4]PlayerRecord
 	// Pad out to offset 0xC0
 	Padding1          [0x80]uint8
-	Inventory         [32]Item
+	Inventory         Inventory
 	Meseta            uint16 `struc:"little"`
 	NumInventoryItems uint8
 	Padding2          [0x31d]uint8
