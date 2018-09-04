@@ -3,8 +3,13 @@ package psedit
 import (
 	"io/ioutil"
 	"os"
+	"reflect"
 	"testing"
 	"unsafe"
+)
+
+const (
+	TestFilename string = "data/phanstar.sav"
 )
 
 func TestSaveFilePacksCorrectly(t *testing.T) {
@@ -17,7 +22,7 @@ func TestSaveFilePacksCorrectly(t *testing.T) {
 }
 
 func TestSaveFileHasGoodLength(t *testing.T) {
-	data, err := ioutil.ReadFile("data/phanstar.sav")
+	data, err := ioutil.ReadFile(TestFilename)
 	if err != nil {
 		panic(err)
 	}
@@ -28,13 +33,34 @@ func TestSaveFileHasGoodLength(t *testing.T) {
 
 func TestReadSaveFile(t *testing.T) {
 	saveFile := &SaveFile{}
-	f, err := os.Open("data/phanstar.sav")
+	f, err := os.Open(TestFilename)
 	if err != nil {
 		panic(err)
 	}
 	saveFile, err = ReadSaveFile(f)
 	if !saveFile.HasValidMagic() {
 		t.Error("Invalid save file.")
+	}
+}
+
+func TestPackedFileIsIdenticalToOriginal(t *testing.T) {
+	originalBytes, err := ioutil.ReadFile(TestFilename)
+	if err != nil {
+		panic(err)
+	}
+	saveFile := &SaveFile{}
+	f, err := os.Open(TestFilename)
+	if err != nil {
+		panic(err)
+	}
+	saveFile, err = ReadSaveFile(f)
+	if err != nil {
+		panic(err)
+	}
+	var buffer = saveFile.Pack()
+	var newlyPackedBytes = buffer.Bytes()
+	if !reflect.DeepEqual(originalBytes, newlyPackedBytes) {
+		t.Error("Rewritten save file differs from original.")
 	}
 }
 
