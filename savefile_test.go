@@ -1,10 +1,9 @@
 package psedit
 
 import (
-	"bytes"
 	"fmt"
-	"github.com/lunixbochs/struc"
 	"io/ioutil"
+	"os"
 	"testing"
 	"unsafe"
 )
@@ -40,13 +39,10 @@ func TestReadFile(t *testing.T) {
 	if len(data) != 0x4000 {
 		t.Errorf("Expected 0x4000 bytes; save file was 0x%04x bytes", len(data))
 	}
-	/*
-		f, err := os.Open("data/phanstar.sav")
-		if err != nil {
-			panic(err)
-		}
-	*/
-	buffer := bytes.NewBuffer(data)
-	struc.Unpack(buffer, saveFile)
+	f, err := os.Open("data/phanstar.sav")
+	if err != nil {
+		panic(err)
+	}
+	saveFile, err = ReadSaveFile(f)
 	t.Log(saveFile)
 }

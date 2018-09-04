@@ -2,7 +2,9 @@ package psedit
 
 import (
 	"bytes"
+	"encoding/binary"
 	"github.com/lunixbochs/struc"
+	"io"
 )
 
 type Item uint8
@@ -46,7 +48,7 @@ type PlayerRecord struct {
 	Alive              bool
 	CurrentHP          uint8
 	CurrentMP          uint8
-	Experience         uint16
+	Experience         uint16 `struc:"little"`
 	Level              uint8
 	MaxHP              uint8
 	MaxMP              uint8
@@ -60,15 +62,68 @@ type PlayerRecord struct {
 	NumNonCombatSpells uint8
 }
 
+// Pack returns a bytes.Buffer object suitable for writing to a save file.
+// (Using the Go structure directly results in too much padding.)
+func (record *PlayerRecord) Pack() bytes.Buffer {
+	var buffer = bytes.Buffer{}
+	err := struc.Pack(&buffer, record)
+	if err != nil {
+		panic(err)
+	}
+	return buffer
+}
+
 type SavedGame struct {
 	// 0x40 bytes of character date
 	Characters [4]PlayerRecord
 	// Pad out to offset 0xC0
 	Padding1          [0x80]uint8
 	Inventory         [32]Item
-	Meseta            uint16
+	Meseta            uint16 `struc:"little"`
 	NumInventoryItems uint8
 	Padding2          [0x31d]uint8
+}
+
+func ReadSavedGame(r io.Reader, savedGame *SavedGame) error {
+	var err error
+	for i := 0; i < len(savedGame.Characters); i++ {
+		err := struc.Unpack(r, &savedGame.Characters[i])
+		if err != nil {
+			return err
+		}
+	}
+	err = binary.Read(r, binary.BigEndian, &savedGame.Padding1)
+	if err != nil {
+		return err
+	}
+	err = binary.Read(r, binary.BigEndian, &savedGame.Inventory)
+	if err != nil {
+		return err
+	}
+	err = binary.Read(r, binary.LittleEndian, &savedGame.Meseta)
+	if err != nil {
+		return err
+	}
+	err = binary.Read(r, binary.BigEndian, &savedGame.NumInventoryItems)
+	if err != nil {
+		return err
+	}
+	err = binary.Read(r, binary.BigEndian, &savedGame.Padding2)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Pack returns a bytes.Buffer object suitable for writing to a save file.
+// (Using the Go structure directly results in too much padding.)
+func (record *SavedGame) Pack() bytes.Buffer {
+	var buffer = bytes.Buffer{}
+	err := struc.Pack(&buffer, record)
+	if err != nil {
+		panic(err)
+	}
+	return buffer
 }
 
 type SaveFile struct {
@@ -91,6 +146,31 @@ func (record *SaveFile) Pack() bytes.Buffer {
 		panic(err)
 	}
 	return buffer
+}
+
+func ReadSaveFile(r io.Reader) (*SaveFile, error) {
+	saveFile := &SaveFile{}
+	var err error
+	err = binary.Read(r, binary.BigEndian, &saveFile.Magic)
+	if err != nil {
+		return nil, err
+	}
+	err = binary.Read(r, binary.BigEndian, &saveFile.Header)
+	if err != nil {
+		return nil, err
+	}
+	err = binary.Read(r, binary.BigEndian, &saveFile.Padding1)
+	if err != nil {
+		return nil, err
+	}
+	for i := 0; i < len(saveFile.Games); i++ {
+		err = ReadSavedGame(r, &saveFile.Games[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	err = binary.Read(r, binary.BigEndian, &saveFile.Padding2)
+	return saveFile, nil
 }
 
 var Items = map[Item]string{
