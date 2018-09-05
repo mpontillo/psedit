@@ -95,3 +95,20 @@ func TestExperiments(t *testing.T) {
 	buffer = saveFile.Pack()
 	t.Logf("0x%x\n", buffer.Len())
 }
+
+func TestExperiments2(t *testing.T) {
+	saveFile := &SaveFile{}
+	f, err := os.Open(TestFilename)
+	if err != nil {
+		panic(err)
+	}
+	saveFile, err = ReadSaveFile(f)
+	if err != nil {
+		panic(err)
+	}
+	t.Log(saveFile.SaveIsActive)
+	var expected = [5]bool{true, false, false, true, true}
+	if !reflect.DeepEqual(expected, saveFile.SaveIsActive) {
+		t.Error("Expected saveFile.SaveIsActive to be [true, false, false, true, true].")
+	}
+}

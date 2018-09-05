@@ -35,14 +35,6 @@ var NameOffsets = [...]uint16{
 	0xba,
 }
 
-var DeletedFlagOffsets = [...]uint16{
-	0x101,
-	0x102,
-	0x103,
-	0x104,
-	0x105,
-}
-
 // PlayerRecord is a 16-byte (0x10) structure representing each character.
 type PlayerRecord struct {
 	Alive              bool
@@ -135,10 +127,10 @@ var ExpectedMagic = []uint8("" +
 	"       NAKA YUJI")
 
 type SaveFile struct {
-	Magic  [0x100]uint8
-	Header [0x200]uint8
-	// Pad out to 0x500
-	Padding1 [0x200]uint8
+	Magic        [0x100]uint8
+	SaveNames    [0x101]uint8
+	SaveIsActive [5]bool
+	Padding1     [0x2FA]uint8
 	// Saved games (starting at offset 0x500)
 	Games [5]SavedGame
 	// Pad out to 16 kilobytes
@@ -170,7 +162,11 @@ func ReadSaveFile(r io.Reader) (*SaveFile, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = binary.Read(r, binary.BigEndian, &saveFile.Header)
+	err = binary.Read(r, binary.BigEndian, &saveFile.SaveNames)
+	if err != nil {
+		return nil, err
+	}
+	err = binary.Read(r, binary.BigEndian, &saveFile.SaveIsActive)
 	if err != nil {
 		return nil, err
 	}
