@@ -27,14 +27,6 @@ const (
 
 type Header [0x200]uint8
 
-var NameOffsets = [...]uint16{
-	0x2a,
-	0x4e,
-	0x72,
-	0x96,
-	0xba,
-}
-
 var CharacterSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ,;.!?-\"  "
 
 // PlayerRecord is a 16-byte (0x10) structure representing each character.
