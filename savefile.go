@@ -27,17 +27,17 @@ const (
 
 type Header [0x200]uint8
 
-var CharacterSet = "                                                      " +
+var CharacterSet = []rune("                                               " +
 	"                                                                     " +
 	"                                                                     " +
-	"           " +
-	"ABCDEFGHIJKLMNOPQRSTUVWXYZ,;.!?-\"  "
+	"                  " +
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZ,;.!?-\"  ")
 
-var ExtendedCharacterSet = "                                              " +
+var ExtendedCharacterSet = []rune("                                       " +
 	"                                                                     " +
 	"                                                                     " +
-	"         0123456789" +
-	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+	"                0123456789" +
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
 
 // PlayerRecord is a 16-byte (0x10) structure representing each character.
 type PlayerRecord struct {
