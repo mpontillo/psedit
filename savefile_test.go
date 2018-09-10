@@ -9,7 +9,8 @@ import (
 )
 
 const (
-	TestFilename string = "data/phanstar.sav"
+	EnglishSaveFile string = "data/phanstar.sav"
+	SMSPowerSaveFile    string = "data/smspower.sav"
 )
 
 func TestSaveFilePacksCorrectly(t *testing.T) {
@@ -22,7 +23,7 @@ func TestSaveFilePacksCorrectly(t *testing.T) {
 }
 
 func TestSaveFileHasGoodLength(t *testing.T) {
-	data, err := ioutil.ReadFile(TestFilename)
+	data, err := ioutil.ReadFile(EnglishSaveFile)
 	if err != nil {
 		panic(err)
 	}
@@ -33,7 +34,7 @@ func TestSaveFileHasGoodLength(t *testing.T) {
 
 func TestReadSaveFile(t *testing.T) {
 	saveFile := &SaveFile{}
-	f, err := os.Open(TestFilename)
+	f, err := os.Open(EnglishSaveFile)
 	if err != nil {
 		panic(err)
 	}
@@ -44,12 +45,12 @@ func TestReadSaveFile(t *testing.T) {
 }
 
 func TestPackedFileIsIdenticalUnlessChanged(t *testing.T) {
-	originalBytes, err := ioutil.ReadFile(TestFilename)
+	originalBytes, err := ioutil.ReadFile(EnglishSaveFile)
 	if err != nil {
 		panic(err)
 	}
 	saveFile := &SaveFile{}
-	f, err := os.Open(TestFilename)
+	f, err := os.Open(EnglishSaveFile)
 	if err != nil {
 		panic(err)
 	}
@@ -98,7 +99,7 @@ func TestExperiments(t *testing.T) {
 
 func TestExperiments2(t *testing.T) {
 	saveFile := &SaveFile{}
-	f, err := os.Open(TestFilename)
+	f, err := os.Open(SMSPowerSaveFile)
 	if err != nil {
 		panic(err)
 	}
@@ -107,8 +108,14 @@ func TestExperiments2(t *testing.T) {
 		panic(err)
 	}
 	t.Log(saveFile.SaveIsActive)
-	var expected = [5]bool{true, false, false, true, true}
+	var expected = [5]bool{true, true, true, false, true}
 	if !reflect.DeepEqual(expected, saveFile.SaveIsActive) {
 		t.Error("Expected saveFile.SaveIsActive to be [true, false, false, true, true].")
 	}
+	for i := 0 ; i < len(saveFile.SaveGameInfo) ; i++ {
+		t.Log(saveFile.SaveGameInfo[i])
+		t.Log(saveFile.SaveGameInfo[i].GetName())
+	}
+	t.Log(len(CharacterSet))
+	t.Log(len(ExtendedCharacterSet))
 }

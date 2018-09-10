@@ -27,7 +27,17 @@ const (
 
 type Header [0x200]uint8
 
-var CharacterSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ,;.!?-\"  "
+var CharacterSet = "                                                      " +
+	"                                                                     " +
+	"                                                                     " +
+	"           " +
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZ,;.!?-\"  "
+
+var ExtendedCharacterSet = "                                              " +
+	"                                                                     " +
+	"                                                                     " +
+	"         0123456789" +
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
 // PlayerRecord is a 16-byte (0x10) structure representing each character.
 type PlayerRecord struct {
@@ -124,6 +134,23 @@ type SaveGameInfo struct {
 	UnknownData0 [3]uint16  `struc:"little"`
 	EncodedName  [5]uint16  `struc:"little"`
 	UnknownData1 [10]uint16 `struc:"little"`
+}
+
+func (gameInfo *SaveGameInfo) GetName() string {
+	var name = ""
+	var charset = CharacterSet
+	for i := 0; i < len(gameInfo.EncodedName); i++ {
+		index := gameInfo.EncodedName[i]
+		if index & 0x1000 > 0 {
+			charset = ExtendedCharacterSet
+			index &^= 0x1000
+		}
+		if int(index) > len(charset) {
+			continue
+		}
+		name = name + string(charset[index])
+	}
+	return name
 }
 
 type SaveFile struct {
