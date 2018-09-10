@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	EnglishSaveFile string = "data/phanstar.sav"
-	SMSPowerSaveFile    string = "data/smspower.sav"
+	EnglishSaveFile  string = "data/phanstar.sav"
+	SMSPowerSaveFile string = "data/smspower.sav"
 )
 
 func TestSaveFilePacksCorrectly(t *testing.T) {
@@ -112,7 +112,7 @@ func TestExperiments2(t *testing.T) {
 	if !reflect.DeepEqual(expected, saveFile.SaveIsActive) {
 		t.Error("Expected saveFile.SaveIsActive to be [true, false, false, true, true].")
 	}
-	for i := 0 ; i < len(saveFile.SaveGameInfo) ; i++ {
+	for i := 0; i < len(saveFile.SaveGameInfo); i++ {
 		t.Log(saveFile.SaveGameInfo[i])
 		t.Log(saveFile.SaveGameInfo[i].GetName())
 	}

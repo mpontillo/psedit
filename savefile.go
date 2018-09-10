@@ -141,7 +141,7 @@ func (gameInfo *SaveGameInfo) GetName() string {
 	var charset = CharacterSet
 	for i := 0; i < len(gameInfo.EncodedName); i++ {
 		index := gameInfo.EncodedName[i]
-		if index & 0x1000 > 0 {
+		if (index & 0x1000) != 0 {
 			charset = ExtendedCharacterSet
 			index &^= 0x1000
 		}
